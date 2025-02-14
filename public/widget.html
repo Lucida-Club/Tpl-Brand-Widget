@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Search Widget</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f9fafb;
+    }
+
+    .instructions {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 24px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    .instructions h2 {
+      font-size: 20px;
+      color: #1a1a1a;
+      margin: 0 0 16px 0;
+    }
+
+    .instructions p {
+      font-size: 16px;
+      color: #374151;
+      margin: 0 0 16px 0;
+      line-height: 1.5;
+    }
+
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    .copy-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .copy-button:hover {
+      background: #2563eb;
+    }
+
+    .widget-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .widget-header {
+      margin-bottom: 20px;
+    }
+
+    .widget-header h1 {
+      font-size: 24px;
+      color: #1a1a1a;
+      margin: 0 0 8px 0;
+    }
+
+    .widget-header p {
+      font-size: 16px;
+      color: #666;
+      margin: 0;
+    }
+
+    .widget-frame {
+      width: 100%;
+      height: 800px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      background: white;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      .widget-frame {
+        height: 600px;
+      }
+
+      .instructions {
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <h2>How to Embed This Widget</h2>
+    <p>
+      To add this product search widget to your website, copy and paste the following code into your HTML where you want the widget to appear:
+    </p>
+    <pre class="code-block">&lt;iframe
+  src="https://${window.location.host}/"
+  width="100%"
+  height="800"
+  style="border: 1px solid #e5e7eb; border-radius: 8px;"
+  frameborder="0"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</pre>
+    <button class="copy-button" onclick="copyEmbedCode()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      Copy Code
+    </button>
+    <p style="margin-top: 16px;">
+      <strong>Note:</strong> The widget is responsive and will adjust to your container's width. You can customize the height and other styling by modifying the iframe attributes.
+    </p>
+  </div>
+
+  <div class="widget-container">
+    <div class="widget-header">
+      <h1>Embedded Widget Demo</h1>
+      <p>Search and browse available products from our inventory</p>
+    </div>
+
+    <iframe 
+      src="/"
+      class="widget-frame"
+      id="searchWidget"
+      frameborder="0"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script>
+    function copyEmbedCode() {
+      const code = `<iframe
+  src="https://${window.location.host}/"
+  width="100%"
+  height="800"
+  style="border: 1px solid #e5e7eb; border-radius: 8px;"
+  frameborder="0"
+  allowfullscreen>
+</iframe>`;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        const button = document.querySelector('.copy-button');
+        const originalText = button.innerHTML;
+        button.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Copied!
+        `;
+        setTimeout(() => {
+          button.innerHTML = originalText;
+        }, 2000);
+      });
+    }
+
+    // Handle messages from the iframe
+    window.addEventListener('message', (event) => {
+      const allowedOrigins = [
+        'https://lucidaclub.com',
+        'https://brand1products.lucidaclub.com',
+        window.location.origin
+      ];
+      
+      if (allowedOrigins.includes(event.origin)) {
+        const iframe = document.getElementById('searchWidget');
+        
+        switch (event.data.type) {
+          case 'SCROLL_TO_TOP':
+            window.scrollTo(0, 0);
+            break;
+            
+          case 'RESIZE_IFRAME':
+            if (event.data.height) {
+              iframe.style.height = `${event.data.height}px`;
+            }
+            break;
+        }
+      }
+    });
+
+    function adjustIframeHeight() {
+      const iframe = document.getElementById('searchWidget');
+      const minHeight = window.innerWidth <= 768 ? 600 : 800;
+      
+      iframe.contentWindow.postMessage({
+        type: 'GET_CONTENT_HEIGHT'
+      }, '*');
+      
+      iframe.style.height = `${minHeight}px`;
+    }
+
+    window.addEventListener('resize', adjustIframeHeight);
+    window.addEventListener('load', adjustIframeHeight);
+  </script>
+</body>
+</html>
