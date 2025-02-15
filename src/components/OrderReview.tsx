@@ -15,16 +15,34 @@ function OrderReview() {
 
   const total = (product.price || 0) * quantity;
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const orderId = Math.floor(100000 + Math.random() * 900000).toString();
-    navigate('/confirmation', {
-      state: {
-        product,
-        orderId,
-        quantity,
-        formData
+    const orderDetails = {
+      product,
+      orderId,
+      quantity,
+      formData
+    };
+
+    try {
+      const response = await fetch('https://hook.us2.make.com/gic0dkjfhdfv9iches953ts17ddouvxk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderDetails)
+      });
+
+      if (response.ok) {
+        navigate('/confirmation', {
+          state: orderDetails
+        });
+      } else {
+        console.error('Failed to post order details');
       }
-    });
+    } catch (error) {
+      console.error('Error posting order details:', error);
+    }
   };
 
   return (

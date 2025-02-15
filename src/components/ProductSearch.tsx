@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
 import { Search, MapPin, ShoppingCart, Trash2, Filter } from 'lucide-react';
-import type { SearchResult } from '../../shared/types';
+import type { SearchResult } from '../types';
 
 // Initialize Algolia client using environment variables
 const client = algoliasearch(
@@ -16,9 +16,7 @@ function ProductSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [retailers, setRetailers] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedRetailer, setSelectedRetailer] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -59,12 +57,6 @@ function ProductSearch() {
       
       setResults(processedHits as SearchResult[]);
       
-      if (facets?.retailerId) {
-        const retailerList = Object.keys(facets.retailerId);
-        setRetailers(retailerList);
-      } else {
-        setRetailers([]);
-      }
       if (facets?.category) {
         const categoryList = Object.keys(facets.category);
         setCategories(categoryList);
@@ -80,18 +72,18 @@ function ProductSearch() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleSearch(searchTerm, selectedRetailer, selectedCategory);
+      handleSearch(searchTerm, selectedCategory);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, selectedRetailer, selectedCategory, handleSearch]);
+  }, [searchTerm, selectedCategory, handleSearch]);
 
   useEffect(() => {
     handleSearch('');
   }, [handleSearch]);
 
   const handleManualSearch = () => {
-    handleSearch(searchTerm, selectedRetailer, selectedCategory);
+    handleSearch(searchTerm, selectedCategory);
   };
 
   const handleCheckout = (item: SearchResult) => {
@@ -100,10 +92,9 @@ function ProductSearch() {
 
   const handleClearFilters = () => {
     setSelectedCategory('');
-    setSelectedRetailer('');
   };
 
-  const hasActiveFilters = selectedCategory || selectedRetailer;
+  const hasActiveFilters = selectedCategory;
 
   return (
     <div className="p-4 sm:p-8">
@@ -151,27 +142,6 @@ function ProductSearch() {
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            )}
-            {retailers.length > 0 && (
-              <div className="relative">
-                <select
-                  value={selectedRetailer}
-                  onChange={(e) => setSelectedRetailer(e.target.value)}
-                  className="appearance-none w-full sm:w-[200px] px-4 py-2 pr-8 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Retailers</option>
-                  {retailers.map((retailer) => (
-                    <option key={retailer} value={retailer}>
-                      {retailer}
                     </option>
                   ))}
                 </select>
