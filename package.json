@@ -1,5 +1,5 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "lucida-brand-tpl",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy:staging": "netlify deploy",
-    "deploy:production": "netlify deploy --prod"
+    "deploy:staging": "npm run build && netlify deploy",
+    "deploy:production": "npm run build && netlify deploy --prod"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.1",
