@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure content is contained within iframe */
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent iframe content from being cut off */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
