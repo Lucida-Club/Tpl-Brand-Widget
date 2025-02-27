@@ -15,6 +15,13 @@ function OrderReview() {
 
   const total = (product.price || 0) * quantity;
 
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Not provided';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
   const handleConfirmOrder = async () => {
     const orderId = Math.floor(100000 + Math.random() * 900000).toString();
     const orderDetails = {
@@ -103,6 +110,7 @@ function OrderReview() {
                     </p>
                     <p className="text-gray-700">{formData.email || 'No email provided'}</p>
                     <p className="text-gray-700">{formData.phone}</p>
+                    <p className="text-gray-700">Date of Birth: {formatDate(formData.dateOfBirth)}</p>
                     <p className="text-gray-700">{formData.state}</p>
                   </div>
                 </div>

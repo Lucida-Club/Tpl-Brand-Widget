@@ -6,6 +6,7 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
+  dateOfBirth: string;
   state: string;
 }
 

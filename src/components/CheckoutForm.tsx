@@ -69,6 +69,7 @@ function CheckoutForm() {
       lastName: formData.get('lastName') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
+      dateOfBirth: formData.get('dateOfBirth') as string,
       state: formData.get('state') as string,
     };
     
@@ -157,6 +158,24 @@ function CheckoutForm() {
                     className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                   />
                   <p className="mt-1 text-sm text-gray-500">Format: XXX-XXX-XXXX</p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
+                      Date of Birth
+                    </label>
+                    <span className="text-sm text-red-500">*</span>
+                  </div>
+                  <input
+                    type="date"
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    required
+                    defaultValue={storedFormData?.dateOfBirth}
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Must be 21 years or older</p>
                 </div>
 
                 <div>

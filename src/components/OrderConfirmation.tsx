@@ -14,6 +14,7 @@ interface OrderData {
     lastName: string;
     email: string;
     phone: string;
+    dateOfBirth: string;
     state: string;
   };
 }
@@ -24,6 +25,13 @@ function OrderConfirmation() {
   const dispatch = useDispatch();
   const { product, orderId, quantity, formData } = location.state as OrderData;
   const total = (product.price || 0) * quantity;
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Not provided';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   useEffect(() => {
     // Reset the checkout state when the confirmation page is loaded
@@ -75,6 +83,9 @@ function OrderConfirmation() {
               )}
               <p>
                 <span className="font-medium">Phone:</span> {formData.phone}
+              </p>
+              <p>
+                <span className="font-medium">Date of Birth:</span> {formatDate(formData.dateOfBirth)}
               </p>
               <p>
                 <span className="font-medium">State:</span> {formData.state}

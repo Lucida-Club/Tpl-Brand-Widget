@@ -1,22 +1,81 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import algoliasearch from 'algoliasearch';
 import { Search, MapPin, ShoppingCart, Trash2, Filter } from 'lucide-react';
 import type { SearchResult } from '../types';
 
-// Initialize Algolia client using environment variables
-const client = algoliasearch(
-  import.meta.env.VITE_ALGOLIA_APP_ID,
-  import.meta.env.VITE_ALGOLIA_API_KEY
-);
-const index = client.initIndex(import.meta.env.VITE_ALGOLIA_INDEX_NAME);
+// Mock data to replace Algolia search
+const MOCK_PRODUCTS: SearchResult[] = [
+  {
+    objectID: '1',
+    vendor: 'Sample Vendor',
+    productName: 'Premium Cannabis Flower',
+    price: 49.99,
+    upc: '123456789012',
+    storeName: 'Green Leaf Dispensary',
+    totalQuantityOnHand: 25,
+    category: 'Flower',
+    _geoloc: { lat: 42.3601, lng: -71.0589 },
+    distance: 2500
+  },
+  {
+    objectID: '2',
+    vendor: 'Herbal Solutions',
+    productName: 'CBD Tincture 1000mg',
+    price: 79.99,
+    upc: '223456789012',
+    storeName: 'Wellness Cannabis Co.',
+    totalQuantityOnHand: 15,
+    category: 'Tinctures',
+    _geoloc: { lat: 42.3501, lng: -71.0589 },
+    distance: 3200
+  },
+  {
+    objectID: '3',
+    vendor: 'Edibles Inc.',
+    productName: 'THC Gummies - Mixed Fruit',
+    price: 24.99,
+    upc: '323456789012',
+    storeName: 'Green Leaf Dispensary',
+    totalQuantityOnHand: 30,
+    category: 'Edibles',
+    _geoloc: { lat: 42.3701, lng: -71.0589 },
+    distance: 1800
+  },
+  {
+    objectID: '4',
+    vendor: 'Vape Masters',
+    productName: 'Hybrid Vape Cartridge 0.5g',
+    price: 39.99,
+    upc: '423456789012',
+    storeName: 'Wellness Cannabis Co.',
+    totalQuantityOnHand: 20,
+    category: 'Vapes',
+    _geoloc: { lat: 42.3601, lng: -71.0689 },
+    distance: 4100
+  },
+  {
+    objectID: '5',
+    vendor: 'Concentrate Labs',
+    productName: 'Live Resin Concentrate',
+    price: 59.99,
+    upc: '523456789012',
+    storeName: 'High Times Dispensary',
+    totalQuantityOnHand: 10,
+    category: 'Concentrates',
+    _geoloc: { lat: 42.3501, lng: -71.0689 },
+    distance: 5300
+  }
+];
+
+// Get unique categories from mock data
+const MOCK_CATEGORIES = [...new Set(MOCK_PRODUCTS.map(product => product.category || ''))].filter(Boolean);
 
 function ProductSearch() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(MOCK_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -25,55 +84,44 @@ function ProductSearch() {
     return miles.toFixed(1);
   };
 
-  const handleSearch = useCallback(async (query: string, retailerId?: string, category?: string) => {
+  const handleSearch = useCallback(async (query: string, category?: string) => {
     setLoading(true);
-    try {
-      const searchParams: any = {
-        query,
-        hitsPerPage: 20,
-        facets: ['retailerId', 'category'],
-        numericFilters: ['totalQuantityOnHand > 0'],
-        aroundLatLngViaIP: true,
-        getRankingInfo: true
-      };
-
-      const facetFilters = [];
-      if (retailerId) {
-        facetFilters.push(`retailerId:${retailerId}`);
+    
+    // Simulate API delay
+    setTimeout(() => {
+      try {
+        let filteredResults = [...MOCK_PRODUCTS];
+        
+        // Filter by search term
+        if (query) {
+          const lowerQuery = query.toLowerCase();
+          filteredResults = filteredResults.filter(product => 
+            product.productName?.toLowerCase().includes(lowerQuery) || 
+            product.storeName?.toLowerCase().includes(lowerQuery) ||
+            product.category?.toLowerCase().includes(lowerQuery)
+          );
+        }
+        
+        // Filter by category
+        if (category) {
+          filteredResults = filteredResults.filter(product => 
+            product.category === category
+          );
+        }
+        
+        setResults(filteredResults);
+        setLoading(false);
+      } catch (error) {
+        console.error('Search error:', error);
+        setLoading(false);
       }
-      if (category) {
-        facetFilters.push(`category:${category}`);
-      }
-      if (facetFilters.length > 0) {
-        searchParams.facetFilters = facetFilters;
-      }
-
-      const { hits, facets } = await index.search(query, searchParams);
-      
-      const processedHits = hits.map((hit: any) => ({
-        ...hit,
-        distance: hit._rankingInfo?.geoDistance || hit._rankingInfo?.matchedGeoLocation?.distance || null
-      }));
-      
-      setResults(processedHits as SearchResult[]);
-      
-      if (facets?.category) {
-        const categoryList = Object.keys(facets.category);
-        setCategories(categoryList);
-      } else {
-        setCategories([]);
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-    } finally {
-      setLoading(false);
-    }
+    }, 500); // Simulate network delay
   }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch(searchTerm, selectedCategory);
-    }, 1000);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm, selectedCategory, handleSearch]);
