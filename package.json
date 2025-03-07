@@ -8,8 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy:staging": "npm run build && netlify deploy",
-    "deploy:production": "npm run build && netlify deploy --prod"
+    "deploy": "npm run build && netlify deploy --prod"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.1",
